@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -6,83 +6,58 @@ import Navigation from "@/components/Navigation";
 import LocationCard from "@/components/LocationCard";
 import { Search, Filter, SlidersHorizontal } from "lucide-react";
 import Map from "@/components/Map";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
+
+interface LocationData {
+  id: string;
+  name: string;
+  description: string;
+  hero_image_url: string;
+  tags: string[];
+  rating: number;
+  location_links: Array<{
+    type: string;
+    url: string;
+  }>;
+  location_hours: Array<{
+    days: string;
+    open_time: string;
+    close_time: string;
+    is_24_7: boolean;
+  }>;
+}
 
 const Locations = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [selectedSort, setSelectedSort] = useState("popularity");
+  const [allLocations, setAllLocations] = useState<LocationData[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  // Sample location data
-  const allLocations = [
-    {
-      id: "1",
-      name: "Centro Cultural Tijuana",
-      description: "Icónico centro cultural con arquitectura moderna y espacios versátiles para producciones.",
-      image: "https://images.unsplash.com/photo-1588200908342-23b585c03e26?w=400&h=300&fit=crop",
-      tags: ["Arquitectónico", "Cultural", "Interior"],
-      rating: 4.8,
-      mapUrl: "https://maps.google.com/?q=Centro+Cultural+Tijuana",
-      parkingUrl: "https://maps.google.com/?q=parking+near+Centro+Cultural+Tijuana",
-      hours: "9:00 AM - 6:00 PM",
-    },
-    {
-      id: "2", 
-      name: "Avenida Revolución",
-      description: "Emblemática avenida con ambiente urbano vibrante, perfecta para escenas callejeras.",
-      image: "https://images.unsplash.com/photo-1449824913935-59a10b8d2000?w=400&h=300&fit=crop",
-      tags: ["Urbano", "Comercial", "Exterior"],
-      rating: 4.5,
-      mapUrl: "https://maps.google.com/?q=Avenida+Revolución+Tijuana",
-      parkingUrl: "https://maps.google.com/?q=parking+Avenida+Revolución",
-      restroomUrl: "https://maps.google.com/?q=public+restrooms+Avenida+Revolución",
-      hours: "24 horas",
-    },
-    {
-      id: "3",
-      name: "Playas de Tijuana",
-      description: "Costas pintorescas con vistas al Pacífico, ideales para producciones naturales.",
-      image: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=400&h=300&fit=crop",
-      tags: ["Natural", "Playa", "Exterior"],
-      rating: 4.7,
-      mapUrl: "https://maps.google.com/?q=Playas+de+Tijuana",
-      parkingUrl: "https://maps.google.com/?q=parking+Playas+de+Tijuana",
-      hours: "Amanecer - Atardecer",
-    },
-    {
-      id: "4",
-      name: "Mercado Hidalgo",
-      description: "Mercado tradicional con colores vibrantes y ambiente auténtico mexicano.",
-      image: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=400&h=300&fit=crop",
-      tags: ["Cultural", "Interior", "Comercial"],
-      rating: 4.3,
-      mapUrl: "https://maps.google.com/?q=Mercado+Hidalgo+Tijuana",
-      parkingUrl: "https://maps.google.com/?q=parking+Mercado+Hidalgo",
-      restroomUrl: "https://maps.google.com/?q=restrooms+Mercado+Hidalgo",
-      hours: "7:00 AM - 8:00 PM",
-    },
-    {
-      id: "5",
-      name: "Cerro Colorado",
-      description: "Elevación natural con vistas panorámicas de la ciudad y el valle.",
-      image: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=300&fit=crop",
-      tags: ["Natural", "Exterior", "Panorámico"],
-      rating: 4.6,
-      mapUrl: "https://maps.google.com/?q=Cerro+Colorado+Tijuana",
-      hours: "Amanecer - Atardecer",
-    },
-    {
-      id: "6",
-      name: "Hotel Caesar",
-      description: "Hotel histórico con arquitectura clásica y elegantes interiores art deco.",
-      image: "https://images.unsplash.com/photo-1566073771259-6a8506099945?w=400&h=300&fit=crop",
-      tags: ["Histórico", "Interior", "Arquitectónico"],
-      rating: 4.4,
-      mapUrl: "https://maps.google.com/?q=Hotel+Caesar+Tijuana",
-      parkingUrl: "https://maps.google.com/?q=parking+Hotel+Caesar",
-      restroomUrl: "Available on site",
-      hours: "24 horas",
-    },
-  ];
+  useEffect(() => {
+    const fetchLocations = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('locations')
+          .select(`
+            *,
+            location_links(*),
+            location_hours(*)
+          `);
+
+        if (error) throw error;
+        setAllLocations(data || []);
+      } catch (error) {
+        console.error('Error fetching locations:', error);
+        toast.error('Error al cargar las ubicaciones');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchLocations();
+  }, []);
 
   const filteredLocations = allLocations.filter(location => {
     const matchesSearch = location.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -181,11 +156,36 @@ const Locations = () => {
       {/* Locations Grid */}
       <section className="py-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          {sortedLocations.length > 0 ? (
+          {loading ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {sortedLocations.map((location) => (
-                <LocationCard key={location.id} {...location} />
+              {[...Array(6)].map((_, i) => (
+                <div key={i} className="animate-pulse">
+                  <div className="bg-muted rounded-lg h-64"></div>
+                </div>
               ))}
+            </div>
+          ) : sortedLocations.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {sortedLocations.map((location) => {
+                const mapsLink = location.location_links.find(link => link.type === 'maps');
+                const parkingLink = location.location_links.find(link => link.type === 'parking');
+                const hours = location.location_hours[0];
+                
+                return (
+                  <LocationCard 
+                    key={location.id} 
+                    id={location.id}
+                    name={location.name}
+                    description={location.description}
+                    image={location.hero_image_url}
+                    tags={location.tags}
+                    rating={location.rating}
+                    mapUrl={mapsLink?.url}
+                    parkingUrl={parkingLink?.url}
+                    hours={hours?.is_24_7 ? '24 horas' : hours ? `${hours.open_time} - ${hours.close_time}` : undefined}
+                  />
+                );
+              })}
             </div>
           ) : (
             <div className="text-center py-16">

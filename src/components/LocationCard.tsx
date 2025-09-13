@@ -17,6 +17,7 @@ interface LocationCardProps {
 }
 
 const LocationCard = ({
+  id,
   name,
   description,
   image,
@@ -109,7 +110,11 @@ const LocationCard = ({
           )}
         </div>
 
-        <Button className="w-full" variant="hero">
+        <Button 
+          className="w-full" 
+          variant="hero"
+          onClick={() => window.location.href = `/locations/${id}`}
+        >
           Ver Detalles
         </Button>
       </CardContent>

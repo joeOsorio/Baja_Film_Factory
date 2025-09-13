@@ -1,10 +1,11 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import Navigation from "@/components/Navigation";
 import LocationCard from "@/components/LocationCard";
-import { Search, Filter, SlidersHorizontal } from "lucide-react";
+import { Search, Filter, SlidersHorizontal, AlertCircle } from "lucide-react";
 import Map from "@/components/Map";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -21,14 +22,28 @@ interface Location {
 
 const Locations = () => {
   const [searchTerm, setSearchTerm] = useState("");
+  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [selectedSort, setSelectedSort] = useState("popularity");
   const [locations, setLocations] = useState<Location[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [searching, setSearching] = useState(false);
 
+  // Debounce search term
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearchTerm(searchTerm);
+    }, 300);
+
+    return () => clearTimeout(timer);
+  }, [searchTerm]);
+
+  // Fetch locations from database
   useEffect(() => {
     const fetchLocations = async () => {
       try {
+        setError(null);
         const { data, error } = await supabase
           .from('locations')
           .select('*')
@@ -38,6 +53,7 @@ const Locations = () => {
         setLocations(data || []);
       } catch (error) {
         console.error('Error fetching locations:', error);
+        setError('Error al cargar las locaciones. Por favor, intenta de nuevo.');
       } finally {
         setLoading(false);
       }
@@ -46,28 +62,50 @@ const Locations = () => {
     fetchLocations();
   }, []);
 
-  const filteredLocations = locations.filter(location => {
-    const matchesSearch = location.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         location.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         location.tags.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()));
+  // Handle search with debouncing
+  const handleSearch = useCallback((term: string) => {
+    setSearchTerm(term);
+    setSearching(true);
     
-    const matchesCategory = selectedCategory === "all" || 
-                           location.tags.some(tag => tag.toLowerCase().includes(selectedCategory.toLowerCase()));
+    // Reset searching state after debounce delay
+    const timer = setTimeout(() => {
+      setSearching(false);
+    }, 300);
     
-    return matchesSearch && matchesCategory;
-  });
+    return () => clearTimeout(timer);
+  }, []);
 
-  const sortedLocations = [...filteredLocations].sort((a, b) => {
-    switch (selectedSort) {
-      case "rating":
-        return b.rating - a.rating;
-      case "name":
-        return a.name.localeCompare(b.name);
-      case "popularity":
-      default:
-        return b.rating - a.rating; // Default to rating for now
-    }
-  });
+  // Memoized filtered locations for better performance
+  const filteredLocations = useMemo(() => {
+    return locations.filter(location => {
+      const searchLower = debouncedSearchTerm.toLowerCase();
+      const matchesSearch = debouncedSearchTerm === "" || 
+                           location.name.toLowerCase().includes(searchLower) ||
+                           location.description?.toLowerCase().includes(searchLower) ||
+                           location.address?.toLowerCase().includes(searchLower) ||
+                           location.tags?.some(tag => tag.toLowerCase().includes(searchLower));
+      
+      const matchesCategory = selectedCategory === "all" || 
+                             location.tags?.some(tag => tag.toLowerCase().includes(selectedCategory.toLowerCase()));
+      
+      return matchesSearch && matchesCategory;
+    });
+  }, [locations, debouncedSearchTerm, selectedCategory]);
+
+  // Memoized sorted locations
+  const sortedLocations = useMemo(() => {
+    return [...filteredLocations].sort((a, b) => {
+      switch (selectedSort) {
+        case "rating":
+          return (b.rating || 0) - (a.rating || 0);
+        case "name":
+          return a.name.localeCompare(b.name);
+        case "popularity":
+        default:
+          return (b.rating || 0) - (a.rating || 0);
+      }
+    });
+  }, [filteredLocations, selectedSort]);
 
   return (
     <div className="min-h-screen bg-background">
@@ -94,11 +132,16 @@ const Locations = () => {
               <div className="relative flex-1">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-5 h-5" />
                 <Input
-                  placeholder="Buscar por nombre, descripción o etiquetas..."
+                  placeholder="Buscar por nombre, descripción, dirección o etiquetas..."
                   value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
+                  onChange={(e) => handleSearch(e.target.value)}
                   className="pl-10 h-12"
                 />
+                {searching && (
+                  <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                    <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-primary"></div>
+                  </div>
+                )}
               </div>
 
               {/* Category Filter */}
@@ -132,9 +175,16 @@ const Locations = () => {
               </Select>
             </div>
 
-            {/* Results Counter */}
+            {/* Search Results Info */}
             <div className="text-center text-muted-foreground mb-8">
-              Mostrando {sortedLocations.length} de {locations.length} locaciones
+              {debouncedSearchTerm ? (
+                <span>
+                  Mostrando {sortedLocations.length} resultado{sortedLocations.length !== 1 ? 's' : ''} 
+                  {sortedLocations.length > 0 ? ` para "${debouncedSearchTerm}"` : ` - No se encontraron locaciones para "${debouncedSearchTerm}"`}
+                </span>
+              ) : (
+                <span>Mostrando {sortedLocations.length} de {locations.length} locaciones</span>
+              )}
             </div>
           </div>
         </div>
@@ -143,9 +193,22 @@ const Locations = () => {
       {/* Locations Grid */}
       <section className="py-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          {/* Error State */}
+          {error && (
+            <Alert className="mb-8 max-w-4xl mx-auto">
+              <AlertCircle className="h-4 w-4" />
+              <AlertDescription>
+                {error}
+              </AlertDescription>
+            </Alert>
+          )}
+
           {loading ? (
             <div className="text-center py-16">
-              <p className="text-lg">Cargando localizaciones...</p>
+              <div className="flex flex-col items-center gap-4">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+                <p className="text-lg">Cargando locaciones...</p>
+              </div>
             </div>
           ) : sortedLocations.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -173,7 +236,9 @@ const Locations = () => {
                 variant="outline"
                 onClick={() => {
                   setSearchTerm("");
+                  setDebouncedSearchTerm("");
                   setSelectedCategory("all");
+                  setError(null);
                 }}
               >
                 Limpiar filtros

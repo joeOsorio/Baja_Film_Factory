@@ -8,33 +8,58 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
+    /* Core colors - Cinema Tijuana theme */
     --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    --foreground: 220 15% 10%;
 
+    /* Card colors */
     --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card-foreground: 220 15% 10%;
 
+    /* Popover colors */
     --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --popover-foreground: 220 15% 10%;
 
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
+    /* Primary - Deep cinematic teal */
+    --primary: 193 95% 28%;
+    --primary-foreground: 0 0% 98%;
+    --primary-light: 193 95% 35%;
+    --primary-dark: 193 95% 20%;
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    /* Secondary - Warm Tijuana orange */
+    --secondary: 25 95% 65%;
+    --secondary-foreground: 25 15% 15%;
+    --secondary-light: 25 95% 75%;
+    --secondary-dark: 25 95% 55%;
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    /* Muted colors */
+    --muted: 220 10% 97%;
+    --muted-foreground: 220 10% 45%;
 
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    /* Accent colors */
+    --accent: 193 50% 95%;
+    --accent-foreground: 193 95% 28%;
 
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
+    /* Status colors */
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 98%;
+    --success: 142 76% 36%;
+    --success-foreground: 0 0% 98%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    /* Border and input */
+    --border: 220 13% 91%;
+    --input: 220 13% 91%;
+    --ring: 193 95% 28%;
+
+    /* Gradients */
+    --gradient-hero: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary-light)));
+    --gradient-card: linear-gradient(180deg, hsl(var(--background)), hsl(var(--muted)));
+    --gradient-accent: linear-gradient(135deg, hsl(var(--secondary)), hsl(var(--secondary-light)));
+
+    /* Shadows */
+    --shadow-soft: 0 2px 10px -2px hsl(var(--primary) / 0.1);
+    --shadow-card: 0 4px 20px -4px hsl(var(--primary) / 0.15);
+    --shadow-glow: 0 0 30px hsl(var(--primary) / 0.2);
 
     --radius: 0.5rem;
 
@@ -56,33 +81,58 @@ All colors MUST be HSL.
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
+    /* Dark mode - Cinema Tijuana theme */
+    --background: 220 25% 8%;
+    --foreground: 220 10% 95%;
 
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
+    /* Card colors */
+    --card: 220 20% 12%;
+    --card-foreground: 220 10% 95%;
 
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
+    /* Popover colors */
+    --popover: 220 20% 12%;
+    --popover-foreground: 220 10% 95%;
 
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
+    /* Primary colors */
+    --primary: 193 85% 45%;
+    --primary-foreground: 220 25% 8%;
+    --primary-light: 193 85% 55%;
+    --primary-dark: 193 85% 35%;
 
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
+    /* Secondary colors */
+    --secondary: 25 85% 60%;
+    --secondary-foreground: 220 25% 8%;
+    --secondary-light: 25 85% 70%;
+    --secondary-dark: 25 85% 50%;
 
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
+    /* Muted colors */
+    --muted: 220 15% 15%;
+    --muted-foreground: 220 10% 65%;
 
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
+    /* Accent colors */
+    --accent: 220 15% 18%;
+    --accent-foreground: 193 85% 45%;
 
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
+    /* Status colors */
+    --destructive: 0 75% 55%;
+    --destructive-foreground: 220 10% 95%;
+    --success: 142 70% 45%;
+    --success-foreground: 220 10% 95%;
 
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
+    /* Border and input */
+    --border: 220 15% 20%;
+    --input: 220 15% 20%;
+    --ring: 193 85% 45%;
+
+    /* Dark mode gradients */
+    --gradient-hero: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary-light)));
+    --gradient-card: linear-gradient(180deg, hsl(var(--card)), hsl(var(--muted)));
+    --gradient-accent: linear-gradient(135deg, hsl(var(--secondary)), hsl(var(--secondary-light)));
+
+    /* Dark mode shadows */
+    --shadow-soft: 0 2px 10px -2px hsl(0 0% 0% / 0.3);
+    --shadow-card: 0 4px 20px -4px hsl(0 0% 0% / 0.4);
+    --shadow-glow: 0 0 30px hsl(var(--primary) / 0.3);
     --sidebar-background: 240 5.9% 10%;
     --sidebar-foreground: 240 4.8% 95.9%;
     --sidebar-primary: 224.3 76.3% 48%;
@@ -101,5 +151,51 @@ All colors MUST be HSL.
 
   body {
     @apply bg-background text-foreground;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+
+  /* Smooth transitions */
+  * {
+    transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-duration: 200ms;
+  }
+}
+
+@layer components {
+  /* Hero styles */
+  .hero-gradient {
+    background: var(--gradient-hero);
+  }
+  
+  .card-gradient {
+    background: var(--gradient-card);
+  }
+  
+  .accent-gradient {
+    background: var(--gradient-accent);
+  }
+
+  /* Shadow utilities */
+  .shadow-soft {
+    box-shadow: var(--shadow-soft);
+  }
+  
+  .shadow-card {
+    box-shadow: var(--shadow-card);
+  }
+  
+  .shadow-glow {
+    box-shadow: var(--shadow-glow);
+  }
+
+  /* Animation utilities */
+  .animate-float {
+    animation: float 6s ease-in-out infinite;
+  }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
   }
 }

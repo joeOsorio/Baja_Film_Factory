@@ -22,10 +22,18 @@ export default {
         primary: {
           DEFAULT: "hsl(var(--primary))",
           foreground: "hsl(var(--primary-foreground))",
+          light: "hsl(var(--primary-light))",
+          dark: "hsl(var(--primary-dark))",
         },
         secondary: {
           DEFAULT: "hsl(var(--secondary))",
           foreground: "hsl(var(--secondary-foreground))",
+          light: "hsl(var(--secondary-light))",
+          dark: "hsl(var(--secondary-dark))",
+        },
+        success: {
+          DEFAULT: "hsl(var(--success))",
+          foreground: "hsl(var(--success-foreground))",
         },
         destructive: {
           DEFAULT: "hsl(var(--destructive))",
@@ -84,6 +92,19 @@ export default {
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
+        "float": "float 6s ease-in-out infinite",
+        "fade-in": "fade-in 0.5s ease-out",
+        "slide-up": "slide-up 0.3s ease-out",
+      },
+      backgroundImage: {
+        "gradient-hero": "var(--gradient-hero)",
+        "gradient-card": "var(--gradient-card)", 
+        "gradient-accent": "var(--gradient-accent)",
+      },
+      boxShadow: {
+        "soft": "var(--shadow-soft)",
+        "card": "var(--shadow-card)",
+        "glow": "var(--shadow-glow)",
       },
     },
   },

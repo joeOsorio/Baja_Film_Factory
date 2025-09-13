@@ -56,7 +56,7 @@ const Index = () => {
             <Camera className="w-16 h-16 mx-auto mb-6 text-primary-foreground" />
           </div>
           <h1 className="text-4xl md:text-6xl font-bold text-primary-foreground mb-6">
-            CinemaTijuana
+            Baja Film Factory
           </h1>
           <p className="text-xl md:text-2xl text-primary-foreground/90 mb-8 max-w-3xl mx-auto">
             Descubre las mejores locaciones de filmación en Tijuana. Tu directorio completo para producciones cinematográficas.
@@ -206,7 +206,7 @@ const Index = () => {
             ¿Listo para tu próxima producción?
           </h2>
           <p className="text-xl mb-8 opacity-90">
-            Únete a más de 100 producciones que han confiado en CinemaTijuana
+            Únete a más de 100 producciones que han confiado en Baja Film Factory
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button variant="secondary" size="xl">
@@ -227,10 +227,8 @@ const Index = () => {
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             <div>
               <div className="flex items-center space-x-2 mb-4">
-                <div className="w-8 h-8 bg-gradient-hero rounded-lg flex items-center justify-center">
-                  <Camera className="w-5 h-5 text-primary-foreground" />
-                </div>
-                <span className="text-lg font-bold">CinemaTijuana</span>
+                <img src="/logos/logo.png" alt="Baja Film Factory" className="w-8 h-8" />
+                <span className="text-lg font-bold">Baja Film Factory</span>
               </div>
               <p className="text-sm text-muted-foreground">
                 Tu directorio completo para producciones cinematográficas en Tijuana.
@@ -260,7 +258,7 @@ const Index = () => {
             <div>
               <h3 className="font-semibold mb-3">Contacto</h3>
               <ul className="space-y-2 text-sm text-muted-foreground">
-                <li>info@cinematijuana.com</li>
+                <li>info@bajafilmfactory.com</li>
                 <li>+52 664 XXX XXXX</li>
                 <li>Tijuana, Baja California</li>
               </ul>
@@ -268,7 +266,7 @@ const Index = () => {
           </div>
           
           <div className="border-t border-border mt-8 pt-8 text-center text-sm text-muted-foreground">
-            © 2024 CinemaTijuana. Todos los derechos reservados.
+            © 2024 Baja Film Factory. Todos los derechos reservados.
           </div>
         </div>
       </footer>

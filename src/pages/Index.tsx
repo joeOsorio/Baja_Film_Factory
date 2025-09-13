@@ -101,7 +101,7 @@ const Index = () => {
         </div>
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <div className="animate-float">
-            <img src="/img/logos/factory.ico" alt="Baja Film Factory" className="w-24 h-24 mx-auto mb-6" />
+            <img src="/img/logos/factory.ico" alt="Baja Film Factory" className="w-[576px] h-[576px] mx-auto mb-6" />
           </div>
           <h1 className="text-4xl md:text-6xl font-bold text-primary-foreground mb-6">
             Baja Film Factory

@@ -1,11 +1,10 @@
-import { useState, useEffect, useCallback, useMemo } from "react";
+import { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Alert, AlertDescription } from "@/components/ui/alert";
 import Navigation from "@/components/Navigation";
 import LocationCard from "@/components/LocationCard";
-import { Search, Filter, SlidersHorizontal, AlertCircle } from "lucide-react";
+import { Search, Filter, SlidersHorizontal } from "lucide-react";
 import Map from "@/components/Map";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -22,28 +21,14 @@ interface Location {
 
 const Locations = () => {
   const [searchTerm, setSearchTerm] = useState("");
-  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [selectedSort, setSelectedSort] = useState("popularity");
   const [locations, setLocations] = useState<Location[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [searching, setSearching] = useState(false);
 
-  // Debounce search term
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setDebouncedSearchTerm(searchTerm);
-    }, 300);
-
-    return () => clearTimeout(timer);
-  }, [searchTerm]);
-
-  // Fetch locations from database
   useEffect(() => {
     const fetchLocations = async () => {
       try {
-        setError(null);
         const { data, error } = await supabase
           .from('locations')
           .select('*')
@@ -53,7 +38,6 @@ const Locations = () => {
         setLocations(data || []);
       } catch (error) {
         console.error('Error fetching locations:', error);
-        setError('Error al cargar las locaciones. Por favor, intenta de nuevo.');
       } finally {
         setLoading(false);
       }
@@ -62,82 +46,28 @@ const Locations = () => {
     fetchLocations();
   }, []);
 
-  // Remote search against Supabase when the debounced term changes
-  useEffect(() => {
-    const run = async () => {
-      setSearching(true);
-      setError(null);
-      try {
-        let query = supabase.from('locations').select('*').order('name');
-        if (debouncedSearchTerm.trim()) {
-          const term = `%${debouncedSearchTerm.trim()}%`;
-          query = query.or(`name.ilike.${term},description.ilike.${term},address.ilike.${term}`);
-        }
-        const { data, error } = await query;
-        if (error) throw error;
-        setLocations(data || []);
-      } catch (e) {
-        console.error('Error searching locations:', e);
-        setError('No se pudieron cargar resultados. Intenta nuevamente.');
-      } finally {
-        setSearching(false);
-      }
-    };
+  const filteredLocations = locations.filter(location => {
+    const matchesSearch = location.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         location.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         location.tags.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()));
+    
+    const matchesCategory = selectedCategory === "all" || 
+                           location.tags.some(tag => tag.toLowerCase().includes(selectedCategory.toLowerCase()));
+    
+    return matchesSearch && matchesCategory;
+  });
 
-    run();
-  }, [debouncedSearchTerm]);
-
-  // Handle search with debouncing
-  const handleSearch = useCallback((term: string) => {
-    setSearchTerm(term);
-  }, []);
-
-  // Memoized filtered locations for better performance
-  const filteredLocations = useMemo(() => {
-    return locations.filter(location => {
-      const searchLower = debouncedSearchTerm.toLowerCase();
-      const matchesSearch = debouncedSearchTerm === "" || 
-                           location.name.toLowerCase().includes(searchLower) ||
-                           location.description?.toLowerCase().includes(searchLower) ||
-                           location.address?.toLowerCase().includes(searchLower) ||
-                           location.tags?.some(tag => tag.toLowerCase().includes(searchLower));
-      
-      const matchesCategory = selectedCategory === "all" || 
-                             location.tags?.some(tag => tag.toLowerCase().includes(selectedCategory.toLowerCase()));
-      
-      return matchesSearch && matchesCategory;
-    });
-  }, [locations, debouncedSearchTerm, selectedCategory]);
-
-  // Memoized sorted locations
-  const sortedLocations = useMemo(() => {
-    return [...filteredLocations].sort((a, b) => {
-      switch (selectedSort) {
-        case "rating":
-          return (b.rating || 0) - (a.rating || 0);
-        case "name":
-          return a.name.localeCompare(b.name);
-        case "popularity":
-        default:
-          return (b.rating || 0) - (a.rating || 0);
-      }
-    });
-  }, [filteredLocations, selectedSort]);
-
-  const suggestions = useMemo(() => {
-    const s = searchTerm.trim().toLowerCase();
-    if (s.length < 2) return [] as string[];
-    const seen = new Set<string>();
-    return locations
-      .filter(l => l.name.toLowerCase().includes(s))
-      .slice(0, 5)
-      .map(l => l.name)
-      .filter(name => {
-        if (seen.has(name)) return false;
-        seen.add(name);
-        return true;
-      });
-  }, [searchTerm, locations]);
+  const sortedLocations = [...filteredLocations].sort((a, b) => {
+    switch (selectedSort) {
+      case "rating":
+        return b.rating - a.rating;
+      case "name":
+        return a.name.localeCompare(b.name);
+      case "popularity":
+      default:
+        return b.rating - a.rating; // Default to rating for now
+    }
+  });
 
   return (
     <div className="min-h-screen bg-background">
@@ -164,36 +94,11 @@ const Locations = () => {
               <div className="relative flex-1">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-5 h-5" />
                 <Input
-                  placeholder="Buscar por nombre, descripción, dirección o etiquetas..."
+                  placeholder="Buscar por nombre, descripción o etiquetas..."
                   value={searchTerm}
-                  onChange={(e) => handleSearch(e.target.value)}
+                  onChange={(e) => setSearchTerm(e.target.value)}
                   className="pl-10 h-12"
                 />
-                {searching && (
-                  <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
-                    <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-primary"></div>
-                  </div>
-                )}
-                {suggestions.length > 0 && (
-                  <div className="absolute z-10 mt-2 w-full rounded-md border bg-popover text-popover-foreground shadow">
-                    <ul className="py-2">
-                      {suggestions.map((sug) => (
-                        <li key={sug}>
-                          <button
-                            type="button"
-                            className="w-full text-left px-3 py-2 hover:bg-accent hover:text-accent-foreground transition"
-                            onClick={() => {
-                              handleSearch(sug);
-                              setDebouncedSearchTerm(sug);
-                            }}
-                          >
-                            {sug}
-                          </button>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
               </div>
 
               {/* Category Filter */}
@@ -227,16 +132,9 @@ const Locations = () => {
               </Select>
             </div>
 
-            {/* Search Results Info */}
+            {/* Results Counter */}
             <div className="text-center text-muted-foreground mb-8">
-              {debouncedSearchTerm ? (
-                <span>
-                  Mostrando {sortedLocations.length} resultado{sortedLocations.length !== 1 ? 's' : ''} 
-                  {sortedLocations.length > 0 ? ` para "${debouncedSearchTerm}"` : ` - No se encontraron locaciones para "${debouncedSearchTerm}"`}
-                </span>
-              ) : (
-                <span>Mostrando {sortedLocations.length} de {locations.length} locaciones</span>
-              )}
+              Mostrando {sortedLocations.length} de {locations.length} locaciones
             </div>
           </div>
         </div>
@@ -245,22 +143,9 @@ const Locations = () => {
       {/* Locations Grid */}
       <section className="py-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          {/* Error State */}
-          {error && (
-            <Alert className="mb-8 max-w-4xl mx-auto">
-              <AlertCircle className="h-4 w-4" />
-              <AlertDescription>
-                {error}
-              </AlertDescription>
-            </Alert>
-          )}
-
           {loading ? (
             <div className="text-center py-16">
-              <div className="flex flex-col items-center gap-4">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
-                <p className="text-lg">Cargando locaciones...</p>
-              </div>
+              <p className="text-lg">Cargando localizaciones...</p>
             </div>
           ) : sortedLocations.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -288,9 +173,7 @@ const Locations = () => {
                 variant="outline"
                 onClick={() => {
                   setSearchTerm("");
-                  setDebouncedSearchTerm("");
                   setSelectedCategory("all");
-                  setError(null);
                 }}
               >
                 Limpiar filtros

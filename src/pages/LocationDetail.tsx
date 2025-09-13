@@ -113,7 +113,7 @@ const LocationDetail = () => {
       <section className="relative">
         <div className="relative h-96 overflow-hidden">
           <img
-            src={location.hero_image_url}
+            src="/img/location/generic-location-bg.jpg"
             alt={location.name}
             className="w-full h-full object-cover"
           />

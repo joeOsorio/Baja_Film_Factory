@@ -44,6 +44,9 @@ const Navigation = () => {
                 </Button>
               </Link>
             ))}
+            <Link to="/providers">
+              <Button variant="secondary" className="ml-3">Registrar mi empresa</Button>
+            </Link>
           </div>
 
           {/* Mobile menu button */}
@@ -73,6 +76,9 @@ const Navigation = () => {
                   </Button>
                 </Link>
               ))}
+              <Link to="/providers" onClick={() => setIsOpen(false)}>
+                <Button variant="secondary" className="w-full justify-start space-x-2">Registrar mi empresa</Button>
+              </Link>
             </div>
           </div>
         )}

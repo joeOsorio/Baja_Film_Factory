@@ -6,8 +6,11 @@ import LocationCard from "@/components/LocationCard";
 import { Search, MapPin, Users, FileText, Star, Camera, Globe, Shield } from "lucide-react";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import Autoplay from "embla-carousel-autoplay";
+import { Link } from "react-router-dom";
+import { useState } from "react";
 
 const Index = () => {
+  const [query, setQuery] = useState("");
   // Location images for carousel
   const locationImages = [
     { src: "/img/location/Centroculturaltijuana.jpeg", alt: "Centro Cultural Tijuana" },
@@ -17,7 +20,7 @@ const Index = () => {
     { src: "/img/location/Parque-Morelos-.jpg", alt: "Parque Morelos" },
     { src: "/img/location/img-campogolf-hero.jpg", alt: "Campo de Golf" },
     { src: "/img/location/zonkeys.jpg", alt: "Arena Zonkeys" },
-    { src: "/img/location/baja malibu.jpg", alt: "Baja Malibu" },
+    { src: "/img/location/baja-malibu.jpg", alt: "Baja Malibu" },
     { src: "/img/location/Lazaro.jpg", alt: "Preparatoria Lázaro Cárdenas" },
     { src: "/img/location/new-city-medical-plaza-craft-arquitectos-1-sl.jpg", alt: "New City Plaza" },
   ];
@@ -89,7 +92,7 @@ const Index = () => {
                       alt={image.alt}
                       className="w-full h-full object-cover"
                     />
-                    <div className="absolute inset-0 bg-black/50"></div>
+                    <div className="absolute inset-0 bg-black/20"></div>
                   </div>
                 </CarouselItem>
               ))}
@@ -113,20 +116,26 @@ const Index = () => {
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-5 h-5" />
               <Input
                 placeholder="Buscar locaciones..."
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
                 className="pl-10 h-12 bg-background/90 backdrop-blur-sm border-primary-light/30"
               />
             </div>
           </div>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button variant="hero" size="xl">
-              <MapPin className="w-5 h-5" />
-              Explorar Locaciones
-            </Button>
-            <Button variant="cinema" size="xl">
-              <FileText className="w-5 h-5" />
-              Guía de Producción
-            </Button>
+            <Link to="/locations">
+              <Button variant="hero" size="xl">
+                <MapPin className="w-5 h-5" />
+                Explorar Locaciones
+              </Button>
+            </Link>
+            <Link to="/guide">
+              <Button variant="cinema" size="xl">
+                <FileText className="w-5 h-5" />
+                Guía de Producción
+              </Button>
+            </Link>
           </div>
         </div>
       </section>
@@ -214,15 +223,24 @@ const Index = () => {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {featuredLocations.map((location) => (
-              <LocationCard key={location.id} {...location} />
-            ))}
+            {featuredLocations
+              .filter((l) =>
+                !query ||
+                l.name.toLowerCase().includes(query.toLowerCase()) ||
+                l.description.toLowerCase().includes(query.toLowerCase()) ||
+                l.tags.some((t) => t.toLowerCase().includes(query.toLowerCase()))
+              )
+              .map((location) => (
+                <LocationCard key={location.id} {...location} />
+              ))}
           </div>
 
           <div className="text-center mt-8">
-            <Button variant="outline" size="lg">
-              Ver Todas las Locaciones
-            </Button>
+            <Link to="/locations">
+              <Button variant="outline" size="lg">
+                Ver Todas las Locaciones
+              </Button>
+            </Link>
           </div>
         </div>
       </section>

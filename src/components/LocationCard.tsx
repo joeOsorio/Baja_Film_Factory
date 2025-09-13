@@ -78,10 +78,9 @@ const LocationCard = ({
               variant="outline"
               size="sm"
               className="justify-start space-x-2"
-              disabled
             >
-              <Clock className="w-4 h-4 text-muted-foreground" />
-              <span className="text-xs">Horario</span>
+              <Clock className="w-4 h-4 text-primary" />
+              <span className="text-xs">{hours}</span>
             </Button>
           )}
           

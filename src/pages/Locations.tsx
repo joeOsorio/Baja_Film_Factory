@@ -5,6 +5,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import Navigation from "@/components/Navigation";
 import LocationCard from "@/components/LocationCard";
 import { Search, Filter, SlidersHorizontal } from "lucide-react";
+import Map from "@/components/Map";
 
 const Locations = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -120,7 +121,11 @@ const Locations = () => {
             </p>
           </div>
 
-          {/* Search and Filters */}
+          <div className="mt-8">
+            <Map heightClass="h-80" />
+          </div>
+
+           {/* Search and Filters */}
           <div className="max-w-4xl mx-auto">
             <div className="flex flex-col md:flex-row gap-4 mb-6">
               {/* Search */}

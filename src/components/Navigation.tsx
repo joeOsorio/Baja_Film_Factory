@@ -44,7 +44,7 @@ const Navigation = () => {
                 </Button>
               </Link>
             ))}
-            <Link to="/providers">
+            <Link to="/register-company">
               <Button variant="secondary" className="ml-3">Registrar mi empresa</Button>
             </Link>
           </div>
@@ -76,7 +76,7 @@ const Navigation = () => {
                   </Button>
                 </Link>
               ))}
-              <Link to="/providers" onClick={() => setIsOpen(false)}>
+              <Link to="/register-company" onClick={() => setIsOpen(false)}>
                 <Button variant="secondary" className="w-full justify-start space-x-2">Registrar mi empresa</Button>
               </Link>
             </div>

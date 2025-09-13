@@ -14,6 +14,48 @@ export type Database = {
   }
   public: {
     Tables: {
+      companies: {
+        Row: {
+          address: string
+          created_at: string
+          email: string
+          id: string
+          is_verified: boolean | null
+          name: string
+          password_hash: string
+          phone: string
+          rfc: string
+          status: string | null
+          updated_at: string
+        }
+        Insert: {
+          address: string
+          created_at?: string
+          email: string
+          id?: string
+          is_verified?: boolean | null
+          name: string
+          password_hash: string
+          phone: string
+          rfc: string
+          status?: string | null
+          updated_at?: string
+        }
+        Update: {
+          address?: string
+          created_at?: string
+          email?: string
+          id?: string
+          is_verified?: boolean | null
+          name?: string
+          password_hash?: string
+          phone?: string
+          rfc?: string
+          status?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       location_contacts: {
         Row: {
           created_at: string

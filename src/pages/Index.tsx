@@ -228,7 +228,7 @@ const Index = () => {
             <div>
               <div className="flex items-center space-x-2 mb-4">
                 <img src="/logos/factory.ico" alt="Baja Film Factory" className="w-8 h-8" />
-                <span className="text-lg font-bold">Baja Film Factory</span>
+                <span className="text-lg font-bold">Baja Film FFFFFactory</span>
               </div>
               <p className="text-sm text-muted-foreground">
                 Tu directorio completo para producciones cinematográficas en Tijuana.

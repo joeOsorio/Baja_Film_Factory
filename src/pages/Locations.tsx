@@ -62,17 +62,34 @@ const Locations = () => {
     fetchLocations();
   }, []);
 
+  // Remote search against Supabase when the debounced term changes
+  useEffect(() => {
+    const run = async () => {
+      setSearching(true);
+      setError(null);
+      try {
+        let query = supabase.from('locations').select('*').order('name');
+        if (debouncedSearchTerm.trim()) {
+          const term = `%${debouncedSearchTerm.trim()}%`;
+          query = query.or(`name.ilike.${term},description.ilike.${term},address.ilike.${term}`);
+        }
+        const { data, error } = await query;
+        if (error) throw error;
+        setLocations(data || []);
+      } catch (e) {
+        console.error('Error searching locations:', e);
+        setError('No se pudieron cargar resultados. Intenta nuevamente.');
+      } finally {
+        setSearching(false);
+      }
+    };
+
+    run();
+  }, [debouncedSearchTerm]);
+
   // Handle search with debouncing
   const handleSearch = useCallback((term: string) => {
     setSearchTerm(term);
-    setSearching(true);
-    
-    // Reset searching state after debounce delay
-    const timer = setTimeout(() => {
-      setSearching(false);
-    }, 300);
-    
-    return () => clearTimeout(timer);
   }, []);
 
   // Memoized filtered locations for better performance
@@ -107,6 +124,21 @@ const Locations = () => {
     });
   }, [filteredLocations, selectedSort]);
 
+  const suggestions = useMemo(() => {
+    const s = searchTerm.trim().toLowerCase();
+    if (s.length < 2) return [] as string[];
+    const seen = new Set<string>();
+    return locations
+      .filter(l => l.name.toLowerCase().includes(s))
+      .slice(0, 5)
+      .map(l => l.name)
+      .filter(name => {
+        if (seen.has(name)) return false;
+        seen.add(name);
+        return true;
+      });
+  }, [searchTerm, locations]);
+
   return (
     <div className="min-h-screen bg-background">
       <Navigation />
@@ -140,6 +172,26 @@ const Locations = () => {
                 {searching && (
                   <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
                     <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-primary"></div>
+                  </div>
+                )}
+                {suggestions.length > 0 && (
+                  <div className="absolute z-10 mt-2 w-full rounded-md border bg-popover text-popover-foreground shadow">
+                    <ul className="py-2">
+                      {suggestions.map((sug) => (
+                        <li key={sug}>
+                          <button
+                            type="button"
+                            className="w-full text-left px-3 py-2 hover:bg-accent hover:text-accent-foreground transition"
+                            onClick={() => {
+                              handleSearch(sug);
+                              setDebouncedSearchTerm(sug);
+                            }}
+                          >
+                            {sug}
+                          </button>
+                        </li>
+                      ))}
+                    </ul>
                   </div>
                 )}
               </div>

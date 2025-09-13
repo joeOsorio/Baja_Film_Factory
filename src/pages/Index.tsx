@@ -4,8 +4,24 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Navigation from "@/components/Navigation";
 import LocationCard from "@/components/LocationCard";
 import { Search, MapPin, Users, FileText, Star, Camera, Globe, Shield } from "lucide-react";
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
+import Autoplay from "embla-carousel-autoplay";
 
 const Index = () => {
+  // Location images for carousel
+  const locationImages = [
+    { src: "/img/location/Centroculturaltijuana.jpeg", alt: "Centro Cultural Tijuana" },
+    { src: "/img/location/ave-revolucion-2.jpg", alt: "Avenida Revolución" },
+    { src: "/img/location/Playas_de_Tijuana.jpg", alt: "Playas de Tijuana" },
+    { src: "/img/location/presa1.jpg", alt: "La Presa" },
+    { src: "/img/location/Parque-Morelos-.jpg", alt: "Parque Morelos" },
+    { src: "/img/location/img-campogolf-hero.jpg", alt: "Campo de Golf" },
+    { src: "/img/location/zonkeys.jpg", alt: "Arena Zonkeys" },
+    { src: "/img/location/baja malibu.jpg", alt: "Baja Malibu" },
+    { src: "/img/location/Lazaro.jpg", alt: "Preparatoria Lázaro Cárdenas" },
+    { src: "/img/location/new-city-medical-plaza-craft-arquitectos-1-sl.jpg", alt: "New City Plaza" },
+  ];
+
   // Sample location data
   const featuredLocations = [
     {
@@ -110,6 +126,51 @@ const Index = () => {
               <div className="text-sm text-muted-foreground">Calificación</div>
             </div>
           </div>
+        </div>
+      </section>
+
+      {/* Location Images Carousel */}
+      <section className="py-12 bg-muted/50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-8">
+            <h2 className="text-2xl md:text-3xl font-bold mb-4">Locaciones Destacadas</h2>
+            <p className="text-muted-foreground">
+              Descubre los espacios más cinematográficos de Tijuana
+            </p>
+          </div>
+          
+          <Carousel
+            opts={{
+              align: "start",
+              loop: true,
+            }}
+            plugins={[
+              Autoplay({
+                delay: 3000,
+              }),
+            ]}
+            className="w-full"
+          >
+            <CarouselContent className="-ml-2 md:-ml-4">
+              {locationImages.map((image, index) => (
+                <CarouselItem key={index} className="pl-2 md:pl-4 basis-1/2 md:basis-1/3 lg:basis-1/4">
+                  <div className="relative aspect-[4/3] overflow-hidden rounded-lg">
+                    <img
+                      src={image.src}
+                      alt={image.alt}
+                      className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                    <div className="absolute bottom-4 left-4 text-white">
+                      <p className="text-sm font-medium">{image.alt}</p>
+                    </div>
+                  </div>
+                </CarouselItem>
+              ))}
+            </CarouselContent>
+            <CarouselPrevious className="left-4" />
+            <CarouselNext className="right-4" />
+          </Carousel>
         </div>
       </section>
 

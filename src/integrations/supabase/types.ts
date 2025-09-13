@@ -14,7 +14,200 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      location_contacts: {
+        Row: {
+          created_at: string
+          email: string | null
+          id: string
+          location_id: string
+          name: string | null
+          phone: string | null
+          role: string | null
+        }
+        Insert: {
+          created_at?: string
+          email?: string | null
+          id?: string
+          location_id: string
+          name?: string | null
+          phone?: string | null
+          role?: string | null
+        }
+        Update: {
+          created_at?: string
+          email?: string | null
+          id?: string
+          location_id?: string
+          name?: string | null
+          phone?: string | null
+          role?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "location_contacts_location_id_fkey"
+            columns: ["location_id"]
+            isOneToOne: false
+            referencedRelation: "locations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      location_hours: {
+        Row: {
+          close_time: string | null
+          created_at: string
+          days: string
+          id: string
+          is_24_7: boolean | null
+          location_id: string
+          note: string | null
+          open_time: string | null
+        }
+        Insert: {
+          close_time?: string | null
+          created_at?: string
+          days: string
+          id?: string
+          is_24_7?: boolean | null
+          location_id: string
+          note?: string | null
+          open_time?: string | null
+        }
+        Update: {
+          close_time?: string | null
+          created_at?: string
+          days?: string
+          id?: string
+          is_24_7?: boolean | null
+          location_id?: string
+          note?: string | null
+          open_time?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "location_hours_location_id_fkey"
+            columns: ["location_id"]
+            isOneToOne: false
+            referencedRelation: "locations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      location_images: {
+        Row: {
+          alt: string | null
+          created_at: string
+          id: string
+          location_id: string
+          sort_order: number | null
+          url: string
+        }
+        Insert: {
+          alt?: string | null
+          created_at?: string
+          id?: string
+          location_id: string
+          sort_order?: number | null
+          url: string
+        }
+        Update: {
+          alt?: string | null
+          created_at?: string
+          id?: string
+          location_id?: string
+          sort_order?: number | null
+          url?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "location_images_location_id_fkey"
+            columns: ["location_id"]
+            isOneToOne: false
+            referencedRelation: "locations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      location_links: {
+        Row: {
+          created_at: string
+          id: string
+          label: string | null
+          location_id: string
+          type: string
+          url: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          label?: string | null
+          location_id: string
+          type: string
+          url: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          label?: string | null
+          location_id?: string
+          type?: string
+          url?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "location_links_location_id_fkey"
+            columns: ["location_id"]
+            isOneToOne: false
+            referencedRelation: "locations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      locations: {
+        Row: {
+          address: string | null
+          created_at: string
+          description: string | null
+          hero_image_url: string | null
+          id: string
+          latitude: number | null
+          longitude: number | null
+          name: string
+          rating: number | null
+          slug: string | null
+          tags: string[] | null
+          updated_at: string
+        }
+        Insert: {
+          address?: string | null
+          created_at?: string
+          description?: string | null
+          hero_image_url?: string | null
+          id?: string
+          latitude?: number | null
+          longitude?: number | null
+          name: string
+          rating?: number | null
+          slug?: string | null
+          tags?: string[] | null
+          updated_at?: string
+        }
+        Update: {
+          address?: string | null
+          created_at?: string
+          description?: string | null
+          hero_image_url?: string | null
+          id?: string
+          latitude?: number | null
+          longitude?: number | null
+          name?: string
+          rating?: number | null
+          slug?: string | null
+          tags?: string[] | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

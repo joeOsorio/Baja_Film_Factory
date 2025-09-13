@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { ArrowLeft, MapPin, Clock, Car, Phone, Mail, Star, Navigation as NavigationIcon } from "lucide-react";
+import { ArrowLeft, MapPin, Clock, Car, Phone, Mail, Star, Navigation as DirectionsIcon } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import Navigation from "@/components/Navigation";
@@ -246,7 +246,7 @@ const LocationDetail = () => {
                     className="w-full justify-start"
                     onClick={() => window.open(`https://www.google.com/maps/dir/?api=1&destination=${location.latitude},${location.longitude}`, '_blank')}
                   >
-                    <NavigationIcon className="w-4 h-4 mr-2" />
+                    <DirectionsIcon className="w-4 h-4 mr-2" />
                     Cómo llegar
                   </Button>
                 )}
